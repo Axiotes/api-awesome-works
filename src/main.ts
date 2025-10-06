@@ -1,8 +1,36 @@
 import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
+import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
+
 import { AppModule } from './app.module';
 
-async function bootstrap() {
+import { LoggerService } from '@ds-common/services/logger/logger.service';
+import { ErrorLogsInterceptor } from '@ds-common/interceptors/error-logs/error-logs.interceptor';
+import { CombinedLogsInterceptor } from '@ds-common/interceptors/combined-logs/combined-logs.interceptor';
+
+async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
+
+  app.useGlobalPipes(new ValidationPipe());
+
+  const logger = app.get(LoggerService);
+  app.useGlobalInterceptors(new ErrorLogsInterceptor(logger));
+  app.useGlobalInterceptors(new CombinedLogsInterceptor(logger));
+
+  app.setGlobalPrefix('api/v1');
+
+  const config = new DocumentBuilder()
+    .setTitle('Awesome Works API')
+    .setDescription(
+      `API para controle e rastreamento de equipamentos de TI, permitindo uma melhor gestão dos equipamentos tecnológicos da organização.`,
+    )
+    .setVersion('1.0')
+    .build();
+
+  const documentFactory = (): OpenAPIObject =>
+    SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api/docs', app, documentFactory);
+
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
