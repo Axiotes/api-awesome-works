@@ -1,0 +1,15 @@
+model Employee {
+  id           Int              @id @default(autoincrement())
+  name         String           @db.VarChar(150)
+  cpf          String           @db.VarChar(11)
+  email        String           @db.VarChar(100)
+  jobTitle     String           @db.VarChar(100)
+  departmentId Int
+  active       Boolean          @default(true)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime?
+  deletedAt    DateTime?
+
+  department   Department       @relation(fields: [departmentId], references: [id])
+  equipamentItems EquipamentItem[]
+}
