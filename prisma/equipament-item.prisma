@@ -17,7 +17,6 @@ model EquipamentItem {
   updatedAt         DateTime?
   deletedAt         DateTime?
 
-  // Relações
   equipamentModel   Equipament           @relation(fields: [equipamentModelId], references: [id])
   employee          Employee?            @relation(fields: [employeeId], references: [id])
 }
