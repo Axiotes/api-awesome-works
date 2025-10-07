@@ -107,33 +107,30 @@ export class EmployeeService {
     id: number,
     updateEmployeeDto: UpdateEmployeeDto,
   ): Promise<Employee> {
-    const equipament = await this.findById(id);
+    const employee = await this.findById(id);
 
-    if (updateEmployeeDto.cpf && updateEmployeeDto.cpf !== equipament.cpf) {
-      const equipamentExists = await this.employeeRepository.findByCpf(
+    if (updateEmployeeDto.cpf && updateEmployeeDto.cpf !== employee.cpf) {
+      const employeeCpf = await this.employeeRepository.findByCpf(
         updateEmployeeDto.cpf,
         { id: true },
       );
 
-      if (equipamentExists) {
+      if (employeeCpf) {
         throw new ConflictException(
-          `Equipament with the CPF "${updateEmployeeDto.cpf}" already exists`,
+          `Employee with the CPF "${updateEmployeeDto.cpf}" already exists`,
         );
       }
     }
 
-    if (
-      updateEmployeeDto.email &&
-      updateEmployeeDto.email !== equipament.email
-    ) {
-      const equipamentExists = await this.employeeRepository.findByEmail(
+    if (updateEmployeeDto.email && updateEmployeeDto.email !== employee.email) {
+      const employeeEmail = await this.employeeRepository.findByEmail(
         updateEmployeeDto.email,
         { id: true },
       );
 
-      if (equipamentExists) {
+      if (employeeEmail) {
         throw new ConflictException(
-          `Equipament with the email "${updateEmployeeDto.email}" already exists`,
+          `Employee with the email "${updateEmployeeDto.email}" already exists`,
         );
       }
     }
@@ -141,17 +138,57 @@ export class EmployeeService {
     const updatedAt = new Date();
     const employeeUpdated = {
       id,
-      name: updateEmployeeDto.name ?? equipament.name,
-      cpf: updateEmployeeDto.cpf ?? equipament.cpf,
-      email: updateEmployeeDto.email ?? equipament.email,
-      jobTitle: updateEmployeeDto.jobTitle ?? equipament.jobTitle,
-      departmentId: updateEmployeeDto.departmentId ?? equipament.departmentId,
-      active: equipament.active,
-      createdAt: equipament.createdAt,
+      name: updateEmployeeDto.name ?? employee.name,
+      cpf: updateEmployeeDto.cpf ?? employee.cpf,
+      email: updateEmployeeDto.email ?? employee.email,
+      jobTitle: updateEmployeeDto.jobTitle ?? employee.jobTitle,
+      departmentId: updateEmployeeDto.departmentId ?? employee.departmentId,
+      active: employee.active,
+      createdAt: employee.createdAt,
       updatedAt: updatedAt,
-      deletedAt: equipament.deletedAt,
+      deletedAt: employee.deletedAt,
     };
 
     return await this.employeeRepository.update(id, employeeUpdated);
+  }
+
+  public async deactivate(id: number): Promise<Employee> {
+    const employee = await this.employeeRepository.findById(id, {
+      id: true,
+    });
+
+    if (!employee) {
+      throw new NotFoundException(
+        `Employee with non-existent or disabled "${id}" ID`,
+      );
+    }
+
+    const deletedAt = new Date();
+
+    const employeeUpdates = { ...employee, active: false, deletedAt };
+
+    return await this.employeeRepository.update(id, employeeUpdates);
+  }
+
+  public async reactivate(id: number): Promise<Employee> {
+    const employee = await this.employeeRepository.findById(
+      id,
+      {
+        id: true,
+      },
+      false,
+    );
+
+    if (!employee) {
+      throw new NotFoundException(
+        `Employee with non-existent or activated "${id}" ID`,
+      );
+    }
+
+    const deletedAt = null;
+
+    const employeeUpdates = { ...employee, active: true, deletedAt };
+
+    return await this.employeeRepository.update(id, employeeUpdates);
   }
 }
