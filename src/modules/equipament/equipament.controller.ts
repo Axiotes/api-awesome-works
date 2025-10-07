@@ -135,6 +135,34 @@ export class EquipamentController {
     return { data: equipament };
   }
 
+  @ApiOperation({
+    summary: 'Listagem de equipamentos',
+    description:
+      'Este endpoint permite listar todos os equipamentos. Sendo possível utilizar paginação, filtros e selecionar campos específicos para retorno.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Busca realizada com sucesso',
+    schema: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'object',
+          properties: {
+            id: { type: 'number' },
+            name: { type: 'string' },
+            prefix: { type: 'string' },
+            category: { type: 'string' },
+            brand: { type: 'string' },
+            active: { type: 'boolean' },
+            createdAt: { type: 'string', format: 'date-time' },
+            updatedAt: { type: 'string', format: 'date-time', nullable: true },
+            deletedAt: { type: 'string', format: 'date-time', nullable: true },
+          },
+        },
+      },
+    },
+  })
   @Get()
   public async findAll(
     @Query() query: FindAllEquipamentDto,
