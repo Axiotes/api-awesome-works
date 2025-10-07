@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Query,
 } from '@nestjs/common';
@@ -16,6 +17,7 @@ import { ApiResponseType } from '@ds-common/types/api-response.type';
 import { SelectFieldsDto } from '@ds-dtos/select-fields.dto';
 import { buildSelectObject } from '@ds-common/helpers/build-select-object.helper';
 import { FindAllEmployeeDto } from '@ds-dtos/find-all-employee.dto';
+import { UpdateEmployeeDto } from '@ds-dtos/update-employee.dto';
 
 @Controller('employee')
 export class EmployeeController {
@@ -51,9 +53,9 @@ export class EmployeeController {
 
     const select = buildSelectObject(fields, allowed);
 
-    const equipament = await this.employeeService.findById(id, select);
+    const employee = await this.employeeService.findById(id, select);
 
-    return { data: equipament };
+    return { data: employee };
   }
 
   @Get()
@@ -76,12 +78,22 @@ export class EmployeeController {
 
     const select = buildSelectObject(fields, allowed);
 
-    const equipaments = await this.employeeService.findAll(query, select);
+    const employees = await this.employeeService.findAll(query, select);
 
     return {
-      data: equipaments,
+      data: employees,
       pagination: { skip: query.skip, limit: query.limit },
-      total: equipaments.length,
+      total: employees.length,
     };
+  }
+
+  @Patch(':id')
+  public async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateEmployeeDto: UpdateEmployeeDto,
+  ): Promise<ApiResponseType<Employee>> {
+    const employee = await this.employeeService.update(id, updateEmployeeDto);
+
+    return { data: employee };
   }
 }

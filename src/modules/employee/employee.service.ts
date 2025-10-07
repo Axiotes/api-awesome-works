@@ -9,6 +9,7 @@ import { EmployeeRepository } from './employee.repository';
 
 import { EmployeeDto } from '@ds-dtos/employee.dto';
 import { FindEmployeeDto } from '@ds-dtos/find-employee.dto';
+import { UpdateEmployeeDto } from '@ds-dtos/update-employee.dto';
 
 @Injectable()
 export class EmployeeService {
@@ -100,5 +101,57 @@ export class EmployeeService {
       where,
       select,
     );
+  }
+
+  public async update(
+    id: number,
+    updateEmployeeDto: UpdateEmployeeDto,
+  ): Promise<Employee> {
+    const equipament = await this.findById(id);
+
+    if (updateEmployeeDto.cpf && updateEmployeeDto.cpf !== equipament.cpf) {
+      const equipamentExists = await this.employeeRepository.findByCpf(
+        updateEmployeeDto.cpf,
+        { id: true },
+      );
+
+      if (equipamentExists) {
+        throw new ConflictException(
+          `Equipament with the CPF "${updateEmployeeDto.cpf}" already exists`,
+        );
+      }
+    }
+
+    if (
+      updateEmployeeDto.email &&
+      updateEmployeeDto.email !== equipament.email
+    ) {
+      const equipamentExists = await this.employeeRepository.findByEmail(
+        updateEmployeeDto.email,
+        { id: true },
+      );
+
+      if (equipamentExists) {
+        throw new ConflictException(
+          `Equipament with the email "${updateEmployeeDto.email}" already exists`,
+        );
+      }
+    }
+
+    const updatedAt = new Date();
+    const employeeUpdated = {
+      id,
+      name: updateEmployeeDto.name ?? equipament.name,
+      cpf: updateEmployeeDto.cpf ?? equipament.cpf,
+      email: updateEmployeeDto.email ?? equipament.email,
+      jobTitle: updateEmployeeDto.jobTitle ?? equipament.jobTitle,
+      departmentId: updateEmployeeDto.departmentId ?? equipament.departmentId,
+      active: equipament.active,
+      createdAt: equipament.createdAt,
+      updatedAt: updatedAt,
+      deletedAt: equipament.deletedAt,
+    };
+
+    return await this.employeeRepository.update(id, employeeUpdated);
   }
 }
