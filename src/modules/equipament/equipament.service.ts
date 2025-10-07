@@ -22,7 +22,7 @@ export class EquipamentService {
 
     if (equipamentExists) {
       throw new ConflictException(
-        `Equipment with the name "${equipament.name}" already exists`,
+        `Equipament with the name "${equipament.name}" already exists`,
       );
     }
 
@@ -36,7 +36,7 @@ export class EquipamentService {
     const equipament = await this.equipamentRepository.findById(id, select);
 
     if (!equipament) {
-      throw new NotFoundException(`Equipment with ID "${id}" not found`);
+      throw new NotFoundException(`Equipament with ID "${id}" not found`);
     }
 
     return equipament;

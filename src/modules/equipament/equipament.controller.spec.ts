@@ -15,6 +15,8 @@ describe('EquipamentController', () => {
           provide: EquipamentService,
           useValue: {
             create: jest.fn(),
+            findById: jest.fn(),
+            findAll: jest.fn(),
           },
         },
       ],
@@ -28,7 +30,7 @@ describe('EquipamentController', () => {
     expect(controller).toBeDefined();
   });
 
-  it('should create a new equipment successfully', async () => {
+  it('should create a new equipament successfully', async () => {
     const equipamentDto = {
       name: 'Equipament 1',
       brand: 'Dell',

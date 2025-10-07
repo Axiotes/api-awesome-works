@@ -55,7 +55,7 @@ export class EquipamentController {
     schema: {
       type: 'object',
       properties: {
-        message: { example: 'Equipment with the name "XXXXX" already exists' },
+        message: { example: 'Equipament with the name "XXXXX" already exists' },
         error: { example: 'Conflict' },
         statusCode: { example: 409 },
       },
@@ -104,7 +104,7 @@ export class EquipamentController {
     schema: {
       type: 'object',
       properties: {
-        message: { example: 'Equipment with ID "X" not found' },
+        message: { example: 'Equipament with ID "X" not found' },
         error: { example: 'Not Found' },
         statusCode: { example: 404 },
       },

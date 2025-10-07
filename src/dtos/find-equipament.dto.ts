@@ -28,7 +28,7 @@ export class FindEquipamentDto {
   @IsOptional()
   @Transform(({ value }) => value === 'true')
   @IsBoolean()
-  active: boolean;
+  active?: boolean;
 
   @ApiProperty({
     description: 'Filtro por nome do equipamento',
@@ -36,7 +36,7 @@ export class FindEquipamentDto {
   })
   @IsOptional()
   @IsString()
-  name: string;
+  name?: string;
 
   @ApiProperty({
     description: 'Filtro por prefixo do equipamento',
@@ -44,7 +44,7 @@ export class FindEquipamentDto {
   })
   @IsOptional()
   @IsString()
-  prefix: string;
+  prefix?: string;
 
   @ApiProperty({
     description: 'Filtro por categoria do equipamento',
@@ -52,7 +52,7 @@ export class FindEquipamentDto {
   })
   @IsOptional()
   @IsString()
-  category: string;
+  category?: string;
 
   @ApiProperty({
     description: 'Filtro marca do equipamento',
@@ -60,5 +60,5 @@ export class FindEquipamentDto {
   })
   @IsOptional()
   @IsString()
-  brand: string;
+  brand?: string;
 }
