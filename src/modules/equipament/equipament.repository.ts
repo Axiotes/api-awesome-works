@@ -48,4 +48,11 @@ export class EquipamentRepository {
       select,
     });
   }
+
+  public async update(id: number, equipament: Equipament): Promise<Equipament> {
+    return this.prisma.equipament.update({
+      where: { id },
+      data: equipament,
+    });
+  }
 }

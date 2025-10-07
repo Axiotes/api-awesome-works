@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Query,
 } from '@nestjs/common';
@@ -17,6 +18,7 @@ import { ApiResponseType } from '@ds-common/types/api-response.type';
 import { SelectFieldsDto } from '@ds-dtos/select-fields.dto';
 import { buildSelectObject } from '@ds-common/helpers/build-select-object.helper';
 import { FindAllEquipamentDto } from '@ds-dtos/find-all-equipaments.dto';
+import { UpdateEquipamentDto } from '@ds-dtos/update-equipament.dto';
 
 @Controller('equipament')
 export class EquipamentController {
@@ -189,5 +191,18 @@ export class EquipamentController {
       pagination: { skip: query.skip, limit: query.limit },
       total: equipaments.length,
     };
+  }
+
+  @Patch(':id')
+  public async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateEquipamentDto: UpdateEquipamentDto,
+  ): Promise<ApiResponseType<Equipament>> {
+    const equipament = await this.equipamentService.update(
+      id,
+      updateEquipamentDto,
+    );
+
+    return { data: equipament };
   }
 }
