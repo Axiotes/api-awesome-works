@@ -8,29 +8,29 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { Equipament } from '@prisma/client';
+import { Department } from '@prisma/client';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 
-import { EquipamentService } from './equipament.service';
+import { DepartmentService } from './department.service';
 
-import { EquipamentDto } from '@ds-dtos/equipament.dto';
+import { DepartmentDto } from '@ds-dtos/department.dto';
 import { ApiResponseType } from '@ds-common/types/api-response.type';
 import { SelectFieldsDto } from '@ds-dtos/select-fields.dto';
 import { buildSelectObject } from '@ds-common/helpers/build-select-object.helper';
-import { FindAllEquipamentDto } from '@ds-dtos/find-all-equipaments.dto';
-import { UpdateEquipamentDto } from '@ds-dtos/update-equipament.dto';
+import { FindAllDepartmentDto } from '@ds-dtos/find-all-departments.dto';
+import { UpdateDepartmentDto } from '@ds-dtos/update-department.dto';
 
-@Controller('equipament')
-export class EquipamentController {
-  constructor(private readonly equipamentService: EquipamentService) {}
+@Controller('department')
+export class DepartmentController {
+  constructor(private readonly departmentService: DepartmentService) {}
 
   @ApiOperation({
-    summary: 'Cadastra um novo equipamento',
-    description: 'Este endpoint permite criar um novo equipamento no sistema.',
+    summary: 'Cadastra um novo setor',
+    description: 'Este endpoint permite criar um novo setor no sistema.',
   })
   @ApiResponse({
     status: 201,
-    description: 'Equipamento criado com sucesso',
+    description: 'Setor criado com sucesso',
     schema: {
       type: 'object',
       properties: {
@@ -39,9 +39,7 @@ export class EquipamentController {
           properties: {
             id: { type: 'number' },
             name: { type: 'string' },
-            prefix: { type: 'string' },
-            category: { type: 'string' },
-            brand: { type: 'string' },
+            abbreviation: { type: 'string' },
             active: { type: 'boolean' },
             createdAt: { type: 'string', format: 'date-time' },
             updatedAt: { type: 'string', format: 'date-time', nullable: true },
@@ -51,31 +49,19 @@ export class EquipamentController {
       },
     },
   })
-  @ApiResponse({
-    status: 409,
-    description: 'Equipamento com o mesmo nome já existe',
-    schema: {
-      type: 'object',
-      properties: {
-        message: { example: 'Equipament with the name "XXXXX" already exists' },
-        error: { example: 'Conflict' },
-        statusCode: { example: 409 },
-      },
-    },
-  })
   @Post()
   public async create(
-    @Body() equipamentDto: EquipamentDto,
-  ): Promise<ApiResponseType<Equipament>> {
-    const equipament = await this.equipamentService.create(equipamentDto);
+    @Body() departmentDto: DepartmentDto,
+  ): Promise<ApiResponseType<Department>> {
+    const department = await this.departmentService.create(departmentDto);
 
-    return { data: equipament };
+    return { data: department };
   }
 
   @ApiOperation({
-    summary: 'Busca um equipamento pelo ID',
+    summary: 'Busca um setor pelo ID',
     description:
-      'Este endpoint permite a busca de um equipamento pelo seu ID. Sendo possível selecionar campos específicos para retorno.',
+      'Este endpoint permite a busca de um setor pelo seu ID. Sendo possível selecionar campos específicos para retorno.',
   })
   @ApiResponse({
     status: 200,
@@ -88,9 +74,7 @@ export class EquipamentController {
           properties: {
             id: { type: 'number' },
             name: { type: 'string' },
-            prefix: { type: 'string' },
-            category: { type: 'string' },
-            brand: { type: 'string' },
+            abbreviation: { type: 'string' },
             active: { type: 'boolean' },
             createdAt: { type: 'string', format: 'date-time' },
             updatedAt: { type: 'string', format: 'date-time', nullable: true },
@@ -102,11 +86,11 @@ export class EquipamentController {
   })
   @ApiResponse({
     status: 404,
-    description: 'Equipamento não encontrado',
+    description: 'Setor não encontrado',
     schema: {
       type: 'object',
       properties: {
-        message: { example: 'Equipament with ID "X" not found' },
+        message: { example: 'Department with ID "X" not found' },
         error: { example: 'Not Found' },
         statusCode: { example: 404 },
       },
@@ -116,14 +100,12 @@ export class EquipamentController {
   public async findById(
     @Param('id', ParseIntPipe) id: number,
     @Query() query: SelectFieldsDto,
-  ): Promise<ApiResponseType<Equipament>> {
+  ): Promise<ApiResponseType<Department>> {
     const fields = query.fields ?? [];
     const allowed = [
       'id',
       'name',
-      'prefix',
-      'category',
-      'brand',
+      'abbreviation',
       'active',
       'created_at',
       'updated_at',
@@ -132,15 +114,15 @@ export class EquipamentController {
 
     const select = buildSelectObject(fields, allowed);
 
-    const equipament = await this.equipamentService.findById(id, select);
+    const department = await this.departmentService.findById(id, select);
 
-    return { data: equipament };
+    return { data: department };
   }
 
   @ApiOperation({
-    summary: 'Listagem de equipamentos',
+    summary: 'Listagem de setores',
     description:
-      'Este endpoint permite listar todos os equipamentos. Sendo possível utilizar paginação, filtros e selecionar campos específicos para retorno.',
+      'Este endpoint permite listar todos os setores. Sendo possível utilizar paginação, filtros e selecionar campos específicos para retorno.',
   })
   @ApiResponse({
     status: 200,
@@ -153,9 +135,7 @@ export class EquipamentController {
           properties: {
             id: { type: 'number' },
             name: { type: 'string' },
-            prefix: { type: 'string' },
-            category: { type: 'string' },
-            brand: { type: 'string' },
+            abbreviation: { type: 'string' },
             active: { type: 'boolean' },
             createdAt: { type: 'string', format: 'date-time' },
             updatedAt: { type: 'string', format: 'date-time', nullable: true },
@@ -167,15 +147,13 @@ export class EquipamentController {
   })
   @Get()
   public async findAll(
-    @Query() query: FindAllEquipamentDto,
-  ): Promise<ApiResponseType<Equipament[]>> {
+    @Query() query: FindAllDepartmentDto,
+  ): Promise<ApiResponseType<Department[]>> {
     const fields = query.fields ?? [];
     const allowed = [
       'id',
       'name',
-      'prefix',
-      'category',
-      'brand',
+      'abbreviation',
       'active',
       'created_at',
       'updated_at',
@@ -184,22 +162,22 @@ export class EquipamentController {
 
     const select = buildSelectObject(fields, allowed);
 
-    const equipaments = await this.equipamentService.findAll(query, select);
+    const department = await this.departmentService.findAll(query, select);
 
     return {
-      data: equipaments,
+      data: department,
       pagination: { skip: query.skip, limit: query.limit },
-      total: equipaments.length,
+      total: department.length,
     };
   }
 
   @ApiOperation({
-    summary: 'Atualizar um equipamento',
-    description: 'Este endpoint permite atualizar um equipamento no sistema.',
+    summary: 'Atualizar um setor',
+    description: 'Este endpoint permite atualizar um setor no sistema.',
   })
   @ApiResponse({
     status: 200,
-    description: 'Equipamento atualizado com sucesso',
+    description: 'Setor atualizado com sucesso',
     schema: {
       type: 'object',
       properties: {
@@ -208,9 +186,7 @@ export class EquipamentController {
           properties: {
             id: { type: 'number' },
             name: { type: 'string' },
-            prefix: { type: 'string' },
-            category: { type: 'string' },
-            brand: { type: 'string' },
+            abbreviation: { type: 'string' },
             active: { type: 'boolean' },
             createdAt: { type: 'string', format: 'date-time' },
             updatedAt: { type: 'string', format: 'date-time', nullable: true },
@@ -220,34 +196,22 @@ export class EquipamentController {
       },
     },
   })
-  @ApiResponse({
-    status: 409,
-    description: 'Equipamento com o mesmo nome já existe',
-    schema: {
-      type: 'object',
-      properties: {
-        message: { example: 'Equipament with the name "XXXXX" already exists' },
-        error: { example: 'Conflict' },
-        statusCode: { example: 409 },
-      },
-    },
-  })
   @Patch(':id')
   public async update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() updateEquipamentDto: UpdateEquipamentDto,
-  ): Promise<ApiResponseType<Equipament>> {
-    const equipament = await this.equipamentService.update(
+    @Body() updateDepartmentDto: UpdateDepartmentDto,
+  ): Promise<ApiResponseType<Department>> {
+    const department = await this.departmentService.update(
       id,
-      updateEquipamentDto,
+      updateDepartmentDto,
     );
 
-    return { data: equipament };
+    return { data: department };
   }
 
   @ApiOperation({
-    summary: 'Desativar um equipamento',
-    description: 'Este endpoint permite desativar um equipamento no sistema',
+    summary: 'Desativar um setor',
+    description: 'Este endpoint permite desativar um setor no sistema',
   })
   @ApiResponse({
     status: 200,
@@ -260,9 +224,7 @@ export class EquipamentController {
           properties: {
             id: { type: 'number' },
             name: { type: 'string' },
-            prefix: { type: 'string' },
-            category: { type: 'string' },
-            brand: { type: 'string' },
+            abbreviation: { type: 'string' },
             active: { type: 'boolean' },
             createdAt: { type: 'string', format: 'date-time' },
             updatedAt: { type: 'string', format: 'date-time', nullable: true },
@@ -274,11 +236,11 @@ export class EquipamentController {
   })
   @ApiResponse({
     status: 404,
-    description: 'Equipamento não encontrado ou já está desativado',
+    description: 'Setor não encontrado ou já está desativado',
     schema: {
       type: 'object',
       properties: {
-        message: { example: 'Equipament with non-existent or disabled "X" ID' },
+        message: { example: 'Department with non-existent or disabled "X" ID' },
         error: { example: 'Not Found' },
         statusCode: { example: 404 },
       },
@@ -287,15 +249,15 @@ export class EquipamentController {
   @Patch('deactivate/:id')
   public async deactivate(
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<ApiResponseType<Equipament>> {
-    const equipament = await this.equipamentService.deactivate(id);
+  ): Promise<ApiResponseType<Department>> {
+    const department = await this.departmentService.deactivate(id);
 
-    return { data: equipament };
+    return { data: department };
   }
 
   @ApiOperation({
-    summary: 'Reativar um equipamento',
-    description: 'Este endpoint permite reativar um equipamento no sistema',
+    summary: 'Reativar um setor',
+    description: 'Este endpoint permite reativar um setor no sistema',
   })
   @ApiResponse({
     status: 200,
@@ -308,9 +270,7 @@ export class EquipamentController {
           properties: {
             id: { type: 'number' },
             name: { type: 'string' },
-            prefix: { type: 'string' },
-            category: { type: 'string' },
-            brand: { type: 'string' },
+            abbreviation: { type: 'string' },
             active: { type: 'boolean' },
             createdAt: { type: 'string', format: 'date-time' },
             updatedAt: { type: 'string', format: 'date-time', nullable: true },
@@ -322,12 +282,12 @@ export class EquipamentController {
   })
   @ApiResponse({
     status: 404,
-    description: 'Equipamento não encontrado ou já está ativo',
+    description: 'Departamento não encontrado ou já está ativo',
     schema: {
       type: 'object',
       properties: {
         message: {
-          example: 'Equipament with non-existent or activated "X" ID',
+          example: 'Department with non-existent or activated "X" ID',
         },
         error: { example: 'Not Found' },
         statusCode: { example: 404 },
@@ -337,9 +297,9 @@ export class EquipamentController {
   @Patch('reactivate/:id')
   public async reactivate(
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<ApiResponseType<Equipament>> {
-    const equipament = await this.equipamentService.reactivate(id);
+  ): Promise<ApiResponseType<Department>> {
+    const department = await this.departmentService.reactivate(id);
 
-    return { data: equipament };
+    return { data: department };
   }
 }
