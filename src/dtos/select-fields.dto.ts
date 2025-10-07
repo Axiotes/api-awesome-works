@@ -1,7 +1,12 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { IsArray, IsOptional, ArrayNotEmpty, IsString } from 'class-validator';
 
 export class SelectFieldsDto {
+  @ApiProperty({
+    description: 'Campos a serem retornados na resposta',
+    example: 'id,active',
+  })
   @IsOptional()
   @Transform(({ value }) => {
     if (value === undefined || value === null) return undefined;

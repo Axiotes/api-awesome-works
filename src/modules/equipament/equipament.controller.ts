@@ -54,9 +54,9 @@ export class EquipamentController {
     schema: {
       type: 'object',
       properties: {
-        message: { type: 'string' },
-        error: { type: 'string' },
-        statusCode: { type: 'number' },
+        message: { example: 'Equipment with the name "XXXXX" already exists' },
+        error: { example: 'Conflict' },
+        statusCode: { example: 409 },
       },
     },
   })
@@ -69,6 +69,46 @@ export class EquipamentController {
     return { data: equipament };
   }
 
+  @ApiOperation({
+    summary: 'Busca um equipamento pelo ID',
+    description:
+      'Este endpoint permite a busca de um equipamento pelo seu ID. Sendo possível selecionar campos específicos para retorno.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Busca realizada com sucesso',
+    schema: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'object',
+          properties: {
+            id: { type: 'number' },
+            name: { type: 'string' },
+            prefix: { type: 'string' },
+            category: { type: 'string' },
+            brand: { type: 'string' },
+            active: { type: 'boolean' },
+            createdAt: { type: 'string', format: 'date-time' },
+            updatedAt: { type: 'string', format: 'date-time', nullable: true },
+            deletedAt: { type: 'string', format: 'date-time', nullable: true },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Equipamento com o mesmo nome já existe',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { example: 'Equipment with ID "X" not found' },
+        error: { example: 'Not Found' },
+        statusCode: { example: 404 },
+      },
+    },
+  })
   @Get(':id')
   public async findById(
     @Param('id', ParseIntPipe) id: number,
