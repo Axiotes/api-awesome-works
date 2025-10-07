@@ -8,6 +8,7 @@ import { Employee, Prisma } from '@prisma/client';
 import { EmployeeRepository } from './employee.repository';
 
 import { EmployeeDto } from '@ds-dtos/employee.dto';
+import { FindEmployeeDto } from '@ds-dtos/find-employee.dto';
 
 @Injectable()
 export class EmployeeService {
@@ -55,5 +56,49 @@ export class EmployeeService {
     }
 
     return employee;
+  }
+
+  public async findAll(
+    findEmployeeDto: FindEmployeeDto,
+    select?: Prisma.EmployeeSelect,
+  ): Promise<Employee[]> {
+    let where = {};
+
+    const filters: { [K in keyof FindEmployeeDto]?: () => void } = {
+      active: () => (where = { ...where, active: findEmployeeDto.active }),
+      name: () =>
+        (where = {
+          ...where,
+          name: { contains: findEmployeeDto.name, mode: 'insensitive' },
+        }),
+      jobTitle: () =>
+        (where = {
+          ...where,
+          jobTitle: { contains: findEmployeeDto.jobTitle, mode: 'insensitive' },
+        }),
+      departmentId: () =>
+        (where = {
+          ...where,
+          departmentId: {
+            contains: findEmployeeDto.departmentId,
+            mode: 'insensitive',
+          },
+        }),
+    };
+
+    for (const key in findEmployeeDto) {
+      if (key === 'skip' || key === 'limit') continue;
+
+      const func = filters[key];
+
+      if (func) func();
+    }
+
+    return await this.employeeRepository.findAll(
+      findEmployeeDto.skip,
+      findEmployeeDto.limit,
+      where,
+      select,
+    );
   }
 }
