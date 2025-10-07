@@ -9,6 +9,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { Department } from '@prisma/client';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 import { DepartmentService } from './department.service';
 
@@ -23,6 +24,31 @@ import { UpdateDepartmentDto } from '@ds-dtos/update-department.dto';
 export class DepartmentController {
   constructor(private readonly departmentService: DepartmentService) {}
 
+  @ApiOperation({
+    summary: 'Cadastra um novo setor',
+    description: 'Este endpoint permite criar um novo setor no sistema.',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Setor criado com sucesso',
+    schema: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'object',
+          properties: {
+            id: { type: 'number' },
+            name: { type: 'string' },
+            abbreviation: { type: 'string' },
+            active: { type: 'boolean' },
+            createdAt: { type: 'string', format: 'date-time' },
+            updatedAt: { type: 'string', format: 'date-time', nullable: true },
+            deletedAt: { type: 'string', format: 'date-time', nullable: true },
+          },
+        },
+      },
+    },
+  })
   @Post()
   public async create(
     @Body() departmentDto: DepartmentDto,
