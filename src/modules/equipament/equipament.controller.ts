@@ -253,4 +253,13 @@ export class EquipamentController {
 
     return { data: equipament };
   }
+
+  @Patch('reactivate/:id')
+  public async reactivate(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<ApiResponseType<Equipament>> {
+    const equipament = await this.equipamentService.reactivate(id);
+
+    return { data: equipament };
+  }
 }

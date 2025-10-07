@@ -147,4 +147,26 @@ export class EquipamentService {
 
     return await this.equipamentRepository.update(id, equipamentUpdates);
   }
+
+  public async reactivate(id: number): Promise<Equipament> {
+    const equipament = await this.equipamentRepository.findById(
+      id,
+      {
+        id: true,
+      },
+      false,
+    );
+
+    if (!equipament) {
+      throw new NotFoundException(
+        `Equipment with non-existent or activated "${id}" ID`,
+      );
+    }
+
+    const deletedAt = null;
+
+    const equipamentUpdates = { ...equipament, active: true, deletedAt };
+
+    return await this.equipamentRepository.update(id, equipamentUpdates);
+  }
 }
