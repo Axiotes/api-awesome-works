@@ -1,4 +1,12 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { EquipamentItem } from '@prisma/client';
 
@@ -6,6 +14,8 @@ import { EquipamentItemService } from './equipament-item.service';
 
 import { EquipamentItemDto } from '@ds-dtos/equipament-item.dto';
 import { ApiResponseType } from '@ds-common/types/api-response.type';
+import { SelectFieldsDto } from '@ds-dtos/select-fields.dto';
+import { buildSelectObject } from '@ds-common/helpers/build-select-object.helper';
 
 @Controller('equipament-item')
 export class EquipamentItemController {
@@ -28,7 +38,8 @@ export class EquipamentItemController {
             id: { type: 'number' },
             serialNumber: { type: 'string' },
             imei: { type: 'string' },
-            equipamentModelId: { type: 'string' },
+            equipamentId: { type: 'string' },
+            employeeId: { type: 'string' },
             status: { type: 'string' },
             active: { type: 'boolean' },
             createdAt: { type: 'string', format: 'date-time' },
@@ -90,5 +101,72 @@ export class EquipamentItemController {
       await this.equipamentItemService.create(equipamentItemDto);
 
     return { data: equipamentItem };
+  }
+
+  @ApiOperation({
+    summary: 'Busca um item de equipamento pelo ID',
+    description:
+      'Este endpoint permite a busca de um item de equipamento pelo seu ID. Sendo possível selecionar campos específicos para retorno.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Busca realizada com sucesso',
+    schema: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'object',
+          properties: {
+            id: { type: 'number' },
+            serialNumber: { type: 'string' },
+            imei: { type: 'string' },
+            equipamentId: { type: 'string' },
+            employeeId: { type: 'string' },
+            status: { type: 'string' },
+            active: { type: 'boolean' },
+            createdAt: { type: 'string', format: 'date-time' },
+            updatedAt: { type: 'string', format: 'date-time', nullable: true },
+            deletedAt: { type: 'string', format: 'date-time', nullable: true },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Item de equipamento não encontrado',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { example: 'Equipament Item with ID "X" not found' },
+        error: { example: 'Not Found' },
+        statusCode: { example: 404 },
+      },
+    },
+  })
+  @Get(':id')
+  public async findById(
+    @Param('id', ParseIntPipe) id: number,
+    @Query() query: SelectFieldsDto,
+  ): Promise<ApiResponseType<EquipamentItem>> {
+    const fields = query.fields ?? [];
+    const allowed = [
+      'id',
+      'serialNumber',
+      'imei',
+      'equipamentId',
+      'employeeId',
+      'status',
+      'active',
+      'created_at',
+      'updated_at',
+      'deleted_at',
+    ];
+
+    const select = buildSelectObject(fields, allowed);
+
+    const equipament = await this.equipamentItemService.findById(id, select);
+
+    return { data: equipament };
   }
 }

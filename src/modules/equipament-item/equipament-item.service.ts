@@ -1,5 +1,9 @@
-import { ConflictException, Injectable } from '@nestjs/common';
-import { EquipamentItem } from '@prisma/client';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { EquipamentItem, Prisma } from '@prisma/client';
 
 import { EquipamentItemRepository } from './equipament-item.repository';
 
@@ -59,5 +63,18 @@ export class EquipamentItemService {
     };
 
     return await this.equipamentItemRepository.create(equipamentItem);
+  }
+
+  public async findById(
+    id: number,
+    select?: Prisma.EquipamentItemSelect,
+  ): Promise<EquipamentItem> {
+    const equipament = await this.equipamentItemRepository.findById(id, select);
+
+    if (!equipament) {
+      throw new NotFoundException(`Equipament Item with ID "${id}" not found`);
+    }
+
+    return equipament;
   }
 }
