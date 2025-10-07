@@ -315,4 +315,108 @@ export class EquipamentItemController {
 
     return { data: equipament };
   }
+
+  @ApiOperation({
+    summary: 'Desativar um item equipamento',
+    description:
+      'Este endpoint permite desativar um item equipamento no sistema',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Desativado com sucesso',
+    schema: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'object',
+          properties: {
+            id: { type: 'number' },
+            serialNumber: { type: 'string' },
+            imei: { type: 'string' },
+            equipamentId: { type: 'string' },
+            employeeId: { type: 'string' },
+            status: { type: 'string' },
+            active: { type: 'boolean' },
+            createdAt: { type: 'string', format: 'date-time' },
+            updatedAt: { type: 'string', format: 'date-time', nullable: true },
+            deletedAt: { type: 'string', format: 'date-time', nullable: true },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Item de equipamento não encontrado ou já está desativado',
+    schema: {
+      type: 'object',
+      properties: {
+        message: {
+          example: 'Equipament Item with non-existent or disabled "X" ID',
+        },
+        error: { example: 'Not Found' },
+        statusCode: { example: 404 },
+      },
+    },
+  })
+  @Patch('deactivate/:id')
+  public async deactivate(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<ApiResponseType<EquipamentItem>> {
+    const equipament = await this.equipamentItemService.deactivate(id);
+
+    return { data: equipament };
+  }
+
+  @ApiOperation({
+    summary: 'Reativar um item de equipamento',
+    description:
+      'Este endpoint permite reativar um item equipamento no sistema',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Reativado com sucesso',
+    schema: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'object',
+          properties: {
+            id: { type: 'number' },
+            serialNumber: { type: 'string' },
+            imei: { type: 'string' },
+            equipamentId: { type: 'string' },
+            employeeId: { type: 'string' },
+            status: { type: 'string' },
+            active: { type: 'boolean' },
+            createdAt: { type: 'string', format: 'date-time' },
+            updatedAt: { type: 'string', format: 'date-time', nullable: true },
+            deletedAt: { type: 'string', format: 'date-time', nullable: true },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Item de equipamento não encontrado ou já está ativo',
+    schema: {
+      type: 'object',
+      properties: {
+        message: {
+          example: 'Equipament Item with non-existent or activated "X" ID',
+        },
+        error: { example: 'Not Found' },
+        statusCode: { example: 404 },
+      },
+    },
+  })
+  @Patch('reactivate/:id')
+  public async reactivate(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<ApiResponseType<EquipamentItem>> {
+    const equipament = await this.equipamentItemService.reactivate(id);
+
+    return { data: equipament };
+  }
 }

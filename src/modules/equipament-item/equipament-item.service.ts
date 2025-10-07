@@ -216,4 +216,44 @@ export class EquipamentItemService {
       equipamentItemUpdated,
     );
   }
+
+  public async deactivate(id: number): Promise<EquipamentItem> {
+    const equipament = await this.equipamentItemRepository.findById(id, {
+      id: true,
+    });
+
+    if (!equipament) {
+      throw new NotFoundException(
+        `Equipament Item with non-existent or disabled "${id}" ID`,
+      );
+    }
+
+    const deletedAt = new Date();
+
+    const equipamentUpdates = { ...equipament, active: false, deletedAt };
+
+    return await this.equipamentItemRepository.update(id, equipamentUpdates);
+  }
+
+  public async reactivate(id: number): Promise<EquipamentItem> {
+    const equipament = await this.equipamentItemRepository.findById(
+      id,
+      {
+        id: true,
+      },
+      false,
+    );
+
+    if (!equipament) {
+      throw new NotFoundException(
+        `Equipament Item with non-existent or activated "${id}" ID`,
+      );
+    }
+
+    const deletedAt = null;
+
+    const equipamentUpdates = { ...equipament, active: true, deletedAt };
+
+    return await this.equipamentItemRepository.update(id, equipamentUpdates);
+  }
 }
