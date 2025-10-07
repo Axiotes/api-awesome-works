@@ -16,6 +16,7 @@ import { EquipamentDto } from '@ds-dtos/equipament.dto';
 import { ApiResponseType } from '@ds-common/types/api-response.type';
 import { SelectFieldsDto } from '@ds-dtos/select-fields.dto';
 import { buildSelectObject } from '@ds-common/helpers/build-select-object.helper';
+import { FindAllEquipamentDto } from '@ds-dtos/find-all-equipaments.dto';
 
 @Controller('equipament')
 export class EquipamentController {
@@ -132,5 +133,33 @@ export class EquipamentController {
     const equipament = await this.equipamentService.findById(id, select);
 
     return { data: equipament };
+  }
+
+  @Get()
+  public async findAll(
+    @Query() query: FindAllEquipamentDto,
+  ): Promise<ApiResponseType<Equipament[]>> {
+    const fields = query.fields ?? [];
+    const allowed = [
+      'id',
+      'name',
+      'prefix',
+      'category',
+      'brand',
+      'active',
+      'created_at',
+      'updated_at',
+      'deleted_at',
+    ];
+
+    const select = buildSelectObject(fields, allowed);
+
+    const equipaments = await this.equipamentService.findAll(query, select);
+
+    return {
+      data: equipaments,
+      pagination: { skip: query.skip, limit: query.limit },
+      total: equipaments.length,
+    };
   }
 }

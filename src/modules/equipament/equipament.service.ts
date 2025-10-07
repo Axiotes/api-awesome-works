@@ -8,6 +8,7 @@ import { Equipament, Prisma } from '@prisma/client';
 import { EquipamentRepository } from './equipament.repository';
 
 import { EquipamentDto } from '@ds-dtos/equipament.dto';
+import { FindEquipamentDto } from '@ds-dtos/find-equipament.dto';
 
 @Injectable()
 export class EquipamentService {
@@ -39,5 +40,54 @@ export class EquipamentService {
     }
 
     return equipament;
+  }
+
+  public async findAll(
+    findEquipamentDto: FindEquipamentDto,
+    select?: Prisma.EquipamentSelect,
+  ): Promise<Equipament[]> {
+    let where = {};
+
+    const filters: { [K in keyof FindEquipamentDto]?: () => void } = {
+      active: () => (where = { ...where, active: findEquipamentDto.active }),
+      name: () =>
+        (where = {
+          ...where,
+          name: { contains: findEquipamentDto.name, mode: 'insensitive' },
+        }),
+      prefix: () =>
+        (where = {
+          ...where,
+          prefix: { contains: findEquipamentDto.prefix, mode: 'insensitive' },
+        }),
+      category: () =>
+        (where = {
+          ...where,
+          category: {
+            contains: findEquipamentDto.category,
+            mode: 'insensitive',
+          },
+        }),
+      brand: () =>
+        (where = {
+          ...where,
+          brand: { contains: findEquipamentDto.brand, mode: 'insensitive' },
+        }),
+    };
+
+    for (const key in findEquipamentDto) {
+      if (key === 'skip' || key === 'limit') continue;
+
+      const func = filters[key];
+
+      if (func) func();
+    }
+
+    return await this.equipamentRepository.findAll(
+      findEquipamentDto.skip,
+      findEquipamentDto.limit,
+      where,
+      select,
+    );
   }
 }

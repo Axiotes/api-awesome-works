@@ -34,4 +34,18 @@ export class EquipamentRepository {
       select,
     });
   }
+
+  public async findAll<T extends Prisma.EquipamentSelect>(
+    skip: number,
+    limit: number,
+    where: Prisma.EquipamentWhereInput = {},
+    select?: T,
+  ): Promise<Prisma.EquipamentGetPayload<{ select: T }>[] | null> {
+    return this.prisma.equipament.findMany({
+      where,
+      skip,
+      take: limit,
+      select,
+    });
+  }
 }
