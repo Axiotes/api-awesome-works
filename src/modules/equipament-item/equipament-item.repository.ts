@@ -7,7 +7,9 @@ import { PrismaService } from '@ds-common/services/prisma/prisma.service';
 export class EquipamentItemRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  public async create(equipament: EquipamentItem): Promise<EquipamentItem> {
+  public async create(
+    equipament: Omit<EquipamentItem, 'id'>,
+  ): Promise<EquipamentItem> {
     return await this.prisma.equipamentItem.create({ data: equipament });
   }
 
