@@ -23,4 +23,29 @@ export class EquipamentRepository {
       select,
     });
   }
+
+  public async findById<T extends Prisma.EquipamentSelect>(
+    id: number,
+    select?: T,
+    active = true,
+  ): Promise<Prisma.EquipamentGetPayload<{ select: T }> | null> {
+    return this.prisma.equipament.findUnique({
+      where: { id, active },
+      select,
+    });
+  }
+
+  public async findAll<T extends Prisma.EquipamentSelect>(
+    skip: number,
+    limit: number,
+    where: Prisma.EquipamentWhereInput = {},
+    select?: T,
+  ): Promise<Prisma.EquipamentGetPayload<{ select: T }>[] | null> {
+    return this.prisma.equipament.findMany({
+      where,
+      skip,
+      take: limit,
+      select,
+    });
+  }
 }

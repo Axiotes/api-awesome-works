@@ -32,7 +32,7 @@ describe('EquipamentService', () => {
     expect(service).toBeDefined();
   });
 
-  it('should create a new equipment succesffuly', async () => {
+  it('should create a new equipament succesffuly', async () => {
     const equipamentDto: EquipamentDto = {
       name: 'Equipament 1',
       brand: 'Dell',
@@ -60,7 +60,7 @@ describe('EquipamentService', () => {
     expect(result).toHaveProperty('name', equipamentDto.name);
   });
 
-  it('should throw a conflict exception when trying to create an existing equipment', async () => {
+  it('should throw a conflict exception when trying to create an existing equipament', async () => {
     const equipamentDto: EquipamentDto = {
       name: 'Equipament 1',
       brand: 'Dell',
@@ -74,7 +74,7 @@ describe('EquipamentService', () => {
 
     await expect(service.create(equipamentDto)).rejects.toThrow(
       new ConflictException(
-        `Equipment with the name "${equipamentDto.name}" already exists`,
+        `Equipament with the name "${equipamentDto.name}" already exists`,
       ),
     );
     expect(repository.create).toHaveBeenCalledTimes(0);
