@@ -171,6 +171,31 @@ export class DepartmentController {
     };
   }
 
+  @ApiOperation({
+    summary: 'Atualizar um setor',
+    description: 'Este endpoint permite atualizar um setor no sistema.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Setor atualizado com sucesso',
+    schema: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'object',
+          properties: {
+            id: { type: 'number' },
+            name: { type: 'string' },
+            abbreviation: { type: 'string' },
+            active: { type: 'boolean' },
+            createdAt: { type: 'string', format: 'date-time' },
+            updatedAt: { type: 'string', format: 'date-time', nullable: true },
+            deletedAt: { type: 'string', format: 'date-time', nullable: true },
+          },
+        },
+      },
+    },
+  })
   @Patch(':id')
   public async update(
     @Param('id', ParseIntPipe) id: number,
