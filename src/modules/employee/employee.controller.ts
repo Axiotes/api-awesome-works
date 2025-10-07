@@ -66,7 +66,7 @@ export class EmployeeController {
   })
   @ApiResponse({
     status: 409,
-    description: 'Email com o mesmo cpf já existe',
+    description: 'Email com o mesmo email já existe',
     schema: {
       type: 'object',
       properties: {
@@ -85,6 +85,47 @@ export class EmployeeController {
     return { data: employee };
   }
 
+  @ApiOperation({
+    summary: 'Busca um colaborador pelo ID',
+    description:
+      'Este endpoint permite a busca de um colaborador pelo seu ID. Sendo possível selecionar campos específicos para retorno.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Busca realizada com sucesso',
+    schema: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'object',
+          properties: {
+            id: { type: 'number' },
+            name: { type: 'string' },
+            cpf: { type: 'string' },
+            email: { type: 'string' },
+            jobTitle: { type: 'string' },
+            departmentId: { type: 'string' },
+            active: { type: 'boolean' },
+            createdAt: { type: 'string', format: 'date-time' },
+            updatedAt: { type: 'string', format: 'date-time', nullable: true },
+            deletedAt: { type: 'string', format: 'date-time', nullable: true },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Colaborador não encontrado',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { example: 'Employee with ID "X" not found' },
+        error: { example: 'Not Found' },
+        statusCode: { example: 404 },
+      },
+    },
+  })
   @Get(':id')
   public async findById(
     @Param('id', ParseIntPipe) id: number,
@@ -111,6 +152,35 @@ export class EmployeeController {
     return { data: employee };
   }
 
+  @ApiOperation({
+    summary: 'Listagem de colaboradores',
+    description:
+      'Este endpoint permite listar todos os colaboradores. Sendo possível utilizar paginação, filtros e selecionar campos específicos para retorno.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Busca realizada com sucesso',
+    schema: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'object',
+          properties: {
+            id: { type: 'number' },
+            name: { type: 'string' },
+            cpf: { type: 'string' },
+            email: { type: 'string' },
+            jobTitle: { type: 'string' },
+            departmentId: { type: 'string' },
+            active: { type: 'boolean' },
+            createdAt: { type: 'string', format: 'date-time' },
+            updatedAt: { type: 'string', format: 'date-time', nullable: true },
+            deletedAt: { type: 'string', format: 'date-time', nullable: true },
+          },
+        },
+      },
+    },
+  })
   @Get()
   public async findAll(
     @Query() query: FindAllEmployeeDto,
