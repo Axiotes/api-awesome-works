@@ -10,6 +10,7 @@ import { EquipamentItemRepository } from './equipament-item.repository';
 import { EquipamentItemDto } from '@ds-dtos/equipament-item.dto';
 import { EquipamentItemStatusEnum } from '@ds-common/enum/equipament-item-status.enum';
 import { EquipamentService } from '@ds-modules/equipament/equipament.service';
+import { FindEquipamentItemDto } from '@ds-dtos/find-equipament-item.dto';
 
 @Injectable()
 export class EquipamentItemService {
@@ -76,5 +77,68 @@ export class EquipamentItemService {
     }
 
     return equipament;
+  }
+
+  public async findAll(
+    findEquipamentDto: FindEquipamentItemDto,
+    select?: Prisma.EquipamentItemSelect,
+  ): Promise<EquipamentItem[]> {
+    let where = {};
+
+    const filters: { [K in keyof FindEquipamentItemDto]?: () => void } = {
+      active: () => (where = { ...where, active: findEquipamentDto.active }),
+      serialNumber: () =>
+        (where = {
+          ...where,
+          serialNumber: {
+            contains: findEquipamentDto.serialNumber,
+            mode: 'insensitive',
+          },
+        }),
+      imei: () =>
+        (where = {
+          ...where,
+          imei: { contains: findEquipamentDto.imei, mode: 'insensitive' },
+        }),
+      equipamentId: () =>
+        (where = {
+          ...where,
+          equipamentId: {
+            contains: findEquipamentDto.equipamentId,
+            mode: 'insensitive',
+          },
+        }),
+      employeeId: () =>
+        (where = {
+          ...where,
+          employeeId: {
+            contains: findEquipamentDto.employeeId,
+            mode: 'insensitive',
+          },
+        }),
+      status: () =>
+        (where = {
+          ...where,
+          status: {
+            contains: findEquipamentDto.status,
+            mode: 'insensitive',
+          },
+        }),
+    };
+
+    for (const key in findEquipamentDto) {
+      if (key === 'skip' || key === 'limit') continue;
+
+      const func = filters[key];
+
+      if (func) func();
+    }
+
+    return await this.equipamentItemRepository.findAll(
+      findEquipamentDto.skip,
+      findEquipamentDto.limit,
+      where,
+      select,
+    );
   }
 }

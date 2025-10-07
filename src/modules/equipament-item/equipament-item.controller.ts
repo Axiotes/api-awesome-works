@@ -16,6 +16,7 @@ import { EquipamentItemDto } from '@ds-dtos/equipament-item.dto';
 import { ApiResponseType } from '@ds-common/types/api-response.type';
 import { SelectFieldsDto } from '@ds-dtos/select-fields.dto';
 import { buildSelectObject } from '@ds-common/helpers/build-select-object.helper';
+import { FindAllEquipamentItemDto } from '@ds-dtos/find-all-equipament-itens.dto';
 
 @Controller('equipament-item')
 export class EquipamentItemController {
@@ -168,5 +169,63 @@ export class EquipamentItemController {
     const equipament = await this.equipamentItemService.findById(id, select);
 
     return { data: equipament };
+  }
+
+  @ApiOperation({
+    summary: 'Listagem de itens de equipamento',
+    description:
+      'Este endpoint permite listar todos os itens de equipamento. Sendo possível utilizar paginação, filtros e selecionar campos específicos para retorno.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Listagem realizada com sucesso',
+    schema: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'object',
+          properties: {
+            id: { type: 'number' },
+            serialNumber: { type: 'string' },
+            imei: { type: 'string' },
+            equipamentId: { type: 'string' },
+            employeeId: { type: 'string' },
+            status: { type: 'string' },
+            active: { type: 'boolean' },
+            createdAt: { type: 'string', format: 'date-time' },
+            updatedAt: { type: 'string', format: 'date-time', nullable: true },
+            deletedAt: { type: 'string', format: 'date-time', nullable: true },
+          },
+        },
+      },
+    },
+  })
+  @Get()
+  public async findAll(
+    @Query() query: FindAllEquipamentItemDto,
+  ): Promise<ApiResponseType<EquipamentItem[]>> {
+    const fields = query.fields ?? [];
+    const allowed = [
+      'id',
+      'serialNumber',
+      'imei',
+      'equipamentId',
+      'employeeId',
+      'status',
+      'active',
+      'created_at',
+      'updated_at',
+      'deleted_at',
+    ];
+
+    const select = buildSelectObject(fields, allowed);
+
+    const equipaments = await this.equipamentItemService.findAll(query, select);
+
+    return {
+      data: equipaments,
+      pagination: { skip: query.skip, limit: query.limit },
+      total: equipaments.length,
+    };
   }
 }
