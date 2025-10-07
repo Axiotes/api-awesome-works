@@ -244,4 +244,13 @@ export class EquipamentController {
 
     return { data: equipament };
   }
+
+  @Patch('deactivate/:id')
+  public async deactivate(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<ApiResponseType<Equipament>> {
+    const equipament = await this.equipamentService.deactivate(id);
+
+    return { data: equipament };
+  }
 }

@@ -129,4 +129,22 @@ export class EquipamentService {
 
     return await this.equipamentRepository.update(id, equipamentUpdates);
   }
+
+  public async deactivate(id: number): Promise<Equipament> {
+    const equipament = await this.equipamentRepository.findById(id, {
+      id: true,
+    });
+
+    if (!equipament) {
+      throw new NotFoundException(
+        `Equipment with non-existent or disabled "${id}" ID`,
+      );
+    }
+
+    const deletedAt = new Date();
+
+    const equipamentUpdates = { ...equipament, active: false, deletedAt };
+
+    return await this.equipamentRepository.update(id, equipamentUpdates);
+  }
 }
