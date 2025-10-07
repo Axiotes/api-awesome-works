@@ -44,7 +44,7 @@ export class DepartmentService {
       abbreviation: () =>
         (where = {
           ...where,
-          prefix: {
+          abbreviation: {
             contains: findDepartmentDto.abbreviation,
             mode: 'insensitive',
           },
