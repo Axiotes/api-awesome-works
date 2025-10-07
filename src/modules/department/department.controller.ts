@@ -209,6 +209,43 @@ export class DepartmentController {
     return { data: department };
   }
 
+  @ApiOperation({
+    summary: 'Desativar um setor',
+    description: 'Este endpoint permite desativar um setor no sistema',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Desativado com sucesso',
+    schema: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'object',
+          properties: {
+            id: { type: 'number' },
+            name: { type: 'string' },
+            abbreviation: { type: 'string' },
+            active: { type: 'boolean' },
+            createdAt: { type: 'string', format: 'date-time' },
+            updatedAt: { type: 'string', format: 'date-time', nullable: true },
+            deletedAt: { type: 'string', format: 'date-time', nullable: true },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Setor não encontrado ou já está desativado',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { example: 'Department with non-existent or disabled "X" ID' },
+        error: { example: 'Not Found' },
+        statusCode: { example: 404 },
+      },
+    },
+  })
   @Patch('deactivate/:id')
   public async deactivate(
     @Param('id', ParseIntPipe) id: number,
@@ -218,6 +255,45 @@ export class DepartmentController {
     return { data: department };
   }
 
+  @ApiOperation({
+    summary: 'Reativar um setor',
+    description: 'Este endpoint permite reativar um setor no sistema',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Reativado com sucesso',
+    schema: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'object',
+          properties: {
+            id: { type: 'number' },
+            name: { type: 'string' },
+            abbreviation: { type: 'string' },
+            active: { type: 'boolean' },
+            createdAt: { type: 'string', format: 'date-time' },
+            updatedAt: { type: 'string', format: 'date-time', nullable: true },
+            deletedAt: { type: 'string', format: 'date-time', nullable: true },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Departamento não encontrado ou já está ativo',
+    schema: {
+      type: 'object',
+      properties: {
+        message: {
+          example: 'Department with non-existent or activated "X" ID',
+        },
+        error: { example: 'Not Found' },
+        statusCode: { example: 404 },
+      },
+    },
+  })
   @Patch('reactivate/:id')
   public async reactivate(
     @Param('id', ParseIntPipe) id: number,

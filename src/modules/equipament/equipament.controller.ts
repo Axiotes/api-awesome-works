@@ -278,7 +278,7 @@ export class EquipamentController {
     schema: {
       type: 'object',
       properties: {
-        message: { example: 'Equipment with non-existent or disabled "X" ID' },
+        message: { example: 'Equipament with non-existent or disabled "X" ID' },
         error: { example: 'Not Found' },
         statusCode: { example: 404 },
       },
@@ -326,7 +326,9 @@ export class EquipamentController {
     schema: {
       type: 'object',
       properties: {
-        message: { example: 'Equipment with non-existent or activated "X" ID' },
+        message: {
+          example: 'Equipament with non-existent or activated "X" ID',
+        },
         error: { example: 'Not Found' },
         statusCode: { example: 404 },
       },
