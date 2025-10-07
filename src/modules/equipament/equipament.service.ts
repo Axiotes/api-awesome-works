@@ -9,6 +9,7 @@ import { EquipamentRepository } from './equipament.repository';
 
 import { EquipamentDto } from '@ds-dtos/equipament.dto';
 import { FindEquipamentDto } from '@ds-dtos/find-equipament.dto';
+import { UpdateEquipamentDto } from '@ds-dtos/update-equipament.dto';
 
 @Injectable()
 export class EquipamentService {
@@ -89,5 +90,43 @@ export class EquipamentService {
       where,
       select,
     );
+  }
+
+  public async update(
+    id: number,
+    updateEquipamentDto: UpdateEquipamentDto,
+  ): Promise<Equipament> {
+    const equipament = await this.findById(id);
+
+    if (
+      updateEquipamentDto.name &&
+      updateEquipamentDto.name !== equipament.name
+    ) {
+      const equipamentExists = await this.equipamentRepository.findByName(
+        updateEquipamentDto.name,
+        { id: true },
+      );
+
+      if (equipamentExists) {
+        throw new ConflictException(
+          `Equipament with the name "${updateEquipamentDto.name}" already exists`,
+        );
+      }
+    }
+
+    const updatedAt = new Date();
+    const equipamentUpdates = {
+      id,
+      name: updateEquipamentDto.name ?? equipament.name,
+      prefix: updateEquipamentDto.prefix ?? equipament.prefix,
+      category: updateEquipamentDto.category ?? equipament.category,
+      brand: updateEquipamentDto.brand ?? equipament.brand,
+      active: equipament.active,
+      createdAt: equipament.createdAt,
+      updatedAt,
+      deletedAt: equipament.deletedAt,
+    };
+
+    return await this.equipamentRepository.update(id, equipamentUpdates);
   }
 }
