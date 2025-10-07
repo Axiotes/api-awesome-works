@@ -193,6 +193,45 @@ export class EquipamentController {
     };
   }
 
+  @ApiOperation({
+    summary: 'Atualizar um equipamento',
+    description: 'Este endpoint permite atualizar um equipamento no sistema.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Equipamento atualizado com sucesso',
+    schema: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'object',
+          properties: {
+            id: { type: 'number' },
+            name: { type: 'string' },
+            prefix: { type: 'string' },
+            category: { type: 'string' },
+            brand: { type: 'string' },
+            active: { type: 'boolean' },
+            createdAt: { type: 'string', format: 'date-time' },
+            updatedAt: { type: 'string', format: 'date-time', nullable: true },
+            deletedAt: { type: 'string', format: 'date-time', nullable: true },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 409,
+    description: 'Equipamento com o mesmo nome já existe',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { example: 'Equipament with the name "XXXXX" already exists' },
+        error: { example: 'Conflict' },
+        statusCode: { example: 409 },
+      },
+    },
+  })
   @Patch(':id')
   public async update(
     @Param('id', ParseIntPipe) id: number,
