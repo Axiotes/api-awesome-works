@@ -11,6 +11,7 @@ import { EquipamentItemDto } from '@ds-dtos/equipament-item.dto';
 import { EquipamentItemStatusEnum } from '@ds-common/enum/equipament-item-status.enum';
 import { EquipamentService } from '@ds-modules/equipament/equipament.service';
 import { FindEquipamentItemDto } from '@ds-dtos/find-equipament-item.dto';
+import { UpdateEquipamentItemDto } from '@ds-dtos/update-equipament-item.dto';
 
 @Injectable()
 export class EquipamentItemService {
@@ -139,6 +140,80 @@ export class EquipamentItemService {
       findEquipamentDto.limit,
       where,
       select,
+    );
+  }
+
+  public async update(
+    id: number,
+    updateEquipamentItemDto: UpdateEquipamentItemDto,
+  ): Promise<EquipamentItem> {
+    const equipamentItem = await this.findById(id);
+
+    if (
+      updateEquipamentItemDto.serialNumber &&
+      updateEquipamentItemDto.serialNumber !== equipamentItem.serialNumber
+    ) {
+      const equipamentExists =
+        await this.equipamentItemRepository.findBySerialNumber(
+          updateEquipamentItemDto.serialNumber,
+          { id: true },
+        );
+
+      if (equipamentExists) {
+        throw new ConflictException(
+          `Equipament Item with the serial number "${updateEquipamentItemDto.serialNumber}" already exists`,
+        );
+      }
+    }
+
+    if (
+      updateEquipamentItemDto.imei &&
+      updateEquipamentItemDto.imei !== equipamentItem.imei
+    ) {
+      const equipamentExists = await this.equipamentItemRepository.findByImei(
+        updateEquipamentItemDto.imei,
+        { id: true },
+      );
+
+      if (equipamentExists) {
+        throw new ConflictException(
+          `Equipament Item with the imei "${updateEquipamentItemDto.serialNumber}" already exists`,
+        );
+      }
+    }
+
+    if (updateEquipamentItemDto.equipamentId) {
+      await this.equipamentService.findById(
+        updateEquipamentItemDto.equipamentId,
+        {
+          id: true,
+        },
+      );
+    }
+
+    const updatedAt = new Date();
+    const equipamentItemUpdated = {
+      id,
+      serialNumber:
+        updateEquipamentItemDto.serialNumber ?? equipamentItem.serialNumber,
+      imei: updateEquipamentItemDto.imei ?? equipamentItem.imei,
+      equipamentModelId:
+        updateEquipamentItemDto.equipamentId ??
+        equipamentItem.equipamentModelId,
+      employeeId:
+        updateEquipamentItemDto.employeeId !== undefined
+          ? Number(updateEquipamentItemDto.employeeId)
+          : equipamentItem.employeeId,
+      status: updateEquipamentItemDto.status ?? equipamentItem.status,
+      active: updateEquipamentItemDto.active ?? equipamentItem.active,
+      createdAt: equipamentItem.createdAt,
+      updatedAt,
+      deletedAt: equipamentItem.deletedAt,
+    };
+
+    return await this.equipamentItemRepository.update(
+      id,
+      equipamentItemUpdated,
     );
   }
 }

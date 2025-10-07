@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Query,
 } from '@nestjs/common';
@@ -17,6 +18,7 @@ import { ApiResponseType } from '@ds-common/types/api-response.type';
 import { SelectFieldsDto } from '@ds-dtos/select-fields.dto';
 import { buildSelectObject } from '@ds-common/helpers/build-select-object.helper';
 import { FindAllEquipamentItemDto } from '@ds-dtos/find-all-equipament-itens.dto';
+import { UpdateEquipamentItemDto } from '@ds-dtos/update-equipament-item.dto';
 
 @Controller('equipament-item')
 export class EquipamentItemController {
@@ -227,5 +229,90 @@ export class EquipamentItemController {
       pagination: { skip: query.skip, limit: query.limit },
       total: equipaments.length,
     };
+  }
+
+  @ApiOperation({
+    summary: 'Atualizar um item de equipamento',
+    description:
+      'Este endpoint permite atualizar um item equipamento no sistema.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Equipamento atualizado com sucesso',
+    schema: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'object',
+          properties: {
+            id: { type: 'number' },
+            serialNumber: { type: 'string' },
+            imei: { type: 'string' },
+            equipamentId: { type: 'string' },
+            employeeId: { type: 'string' },
+            status: { type: 'string' },
+            active: { type: 'boolean' },
+            createdAt: { type: 'string', format: 'date-time' },
+            updatedAt: { type: 'string', format: 'date-time', nullable: true },
+            deletedAt: { type: 'string', format: 'date-time', nullable: true },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 409,
+    description: 'Equipamento com o mesmo número de série já existe',
+    schema: {
+      type: 'object',
+      properties: {
+        message: {
+          example:
+            'Equipament Item with the serial number "XXXXXX" already exists',
+        },
+        error: { example: 'Conflict' },
+        statusCode: { example: 409 },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 409,
+    description: 'Equipamento com o mesmo IMEI já existe',
+    schema: {
+      type: 'object',
+      properties: {
+        message: {
+          example: 'Equipament Item with the IMEI "XXXXXX" already exists',
+        },
+        error: { example: 'Conflict' },
+        statusCode: { example: 409 },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Equipamento com ID inexistente ou desativado',
+    schema: {
+      type: 'object',
+      properties: {
+        message: {
+          example: 'Equipament with ID "X" not found',
+        },
+        error: { example: 'Not Found' },
+        statusCode: { example: 404 },
+      },
+    },
+  })
+  @Patch(':id')
+  public async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateEquipamentDto: UpdateEquipamentItemDto,
+  ): Promise<ApiResponseType<EquipamentItem>> {
+    const equipament = await this.equipamentItemService.update(
+      id,
+      updateEquipamentDto,
+    );
+
+    return { data: equipament };
   }
 }
