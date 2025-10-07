@@ -36,4 +36,14 @@ export class DepartmentRepository {
       select,
     });
   }
+
+  public async update(
+    id: number,
+    department: Partial<Department>,
+  ): Promise<Department> {
+    return this.prisma.department.update({
+      where: { id },
+      data: department,
+    });
+  }
 }

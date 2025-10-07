@@ -5,6 +5,7 @@ import { DepartmentRepository } from './department.repository';
 
 import { DepartmentDto } from '@ds-dtos/department.dto';
 import { FindDepartmentDto } from '@ds-dtos/find-department.dto';
+import { UpdateDepartmentDto } from '@ds-dtos/update-department.dto';
 
 @Injectable()
 export class DepartmentService {
@@ -64,5 +65,25 @@ export class DepartmentService {
       where,
       select,
     );
+  }
+
+  public async update(
+    id: number,
+    updateDepartmentDto: UpdateDepartmentDto,
+  ): Promise<Department> {
+    const department = await this.findById(id);
+
+    const updatedAt = new Date();
+    const departmentUpdates = {
+      id,
+      name: updateDepartmentDto.name ?? department.name,
+      abbreviation: updateDepartmentDto.abbreviation ?? department.abbreviation,
+      active: department.active,
+      createdAt: department.createdAt,
+      updatedAt,
+      deletedAt: department.deletedAt,
+    };
+
+    return await this.departmentRepository.update(id, departmentUpdates);
   }
 }

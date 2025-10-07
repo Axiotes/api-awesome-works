@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Query,
 } from '@nestjs/common';
@@ -16,6 +17,7 @@ import { ApiResponseType } from '@ds-common/types/api-response.type';
 import { SelectFieldsDto } from '@ds-dtos/select-fields.dto';
 import { buildSelectObject } from '@ds-common/helpers/build-select-object.helper';
 import { FindAllDepartmentDto } from '@ds-dtos/find-all-departments.dto';
+import { UpdateDepartmentDto } from '@ds-dtos/update-department.dto';
 
 @Controller('department')
 export class DepartmentController {
@@ -61,9 +63,7 @@ export class DepartmentController {
     const allowed = [
       'id',
       'name',
-      'prefix',
-      'category',
-      'brand',
+      'abbreviation',
       'active',
       'created_at',
       'updated_at',
@@ -79,5 +79,18 @@ export class DepartmentController {
       pagination: { skip: query.skip, limit: query.limit },
       total: department.length,
     };
+  }
+
+  @Patch(':id')
+  public async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateDepartmentDto: UpdateDepartmentDto,
+  ): Promise<ApiResponseType<Department>> {
+    const department = await this.departmentService.update(
+      id,
+      updateDepartmentDto,
+    );
+
+    return { data: department };
   }
 }
