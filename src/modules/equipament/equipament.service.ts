@@ -137,7 +137,7 @@ export class EquipamentService {
 
     if (!equipament) {
       throw new NotFoundException(
-        `Equipment with non-existent or disabled "${id}" ID`,
+        `Equipament with non-existent or disabled "${id}" ID`,
       );
     }
 
@@ -159,7 +159,7 @@ export class EquipamentService {
 
     if (!equipament) {
       throw new NotFoundException(
-        `Equipment with non-existent or activated "${id}" ID`,
+        `Equipament with non-existent or activated "${id}" ID`,
       );
     }
 

@@ -86,4 +86,44 @@ export class DepartmentService {
 
     return await this.departmentRepository.update(id, departmentUpdates);
   }
+
+  public async deactivate(id: number): Promise<Department> {
+    const department = await this.departmentRepository.findById(id, {
+      id: true,
+    });
+
+    if (!department) {
+      throw new NotFoundException(
+        `Department with non-existent or disabled "${id}" ID`,
+      );
+    }
+
+    const deletedAt = new Date();
+
+    const departmentUpdates = { ...department, active: false, deletedAt };
+
+    return await this.departmentRepository.update(id, departmentUpdates);
+  }
+
+  public async reactivate(id: number): Promise<Department> {
+    const department = await this.departmentRepository.findById(
+      id,
+      {
+        id: true,
+      },
+      false,
+    );
+
+    if (!department) {
+      throw new NotFoundException(
+        `Department with non-existent or activated "${id}" ID`,
+      );
+    }
+
+    const deletedAt = null;
+
+    const departmentUpdates = { ...department, active: true, deletedAt };
+
+    return await this.departmentRepository.update(id, departmentUpdates);
+  }
 }

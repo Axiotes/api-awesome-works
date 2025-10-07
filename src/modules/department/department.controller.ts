@@ -93,4 +93,22 @@ export class DepartmentController {
 
     return { data: department };
   }
+
+  @Patch('deactivate/:id')
+  public async deactivate(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<ApiResponseType<Department>> {
+    const department = await this.departmentService.deactivate(id);
+
+    return { data: department };
+  }
+
+  @Patch('reactivate/:id')
+  public async reactivate(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<ApiResponseType<Department>> {
+    const department = await this.departmentService.reactivate(id);
+
+    return { data: department };
+  }
 }
