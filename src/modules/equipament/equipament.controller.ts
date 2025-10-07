@@ -1,11 +1,11 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { Equipament } from '@prisma/client';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 import { EquipamentService } from './equipament.service';
 
 import { EquipamentDto } from '@ds-dtos/equipament.dto';
 import { ApiResponseType } from '@ds-common/types/api-response.type';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @Controller('equipament')
 export class EquipamentController {
@@ -32,6 +32,7 @@ export class EquipamentController {
             active: { type: 'boolean' },
             createdAt: { type: 'string', format: 'date-time' },
             updatedAt: { type: 'string', format: 'date-time', nullable: true },
+            deletedAt: { type: 'string', format: 'date-time', nullable: true },
           },
         },
       },
