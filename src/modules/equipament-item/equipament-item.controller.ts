@@ -419,4 +419,88 @@ export class EquipamentItemController {
 
     return { data: equipament };
   }
+
+  @ApiOperation({
+    summary: 'Alocar um item de equipamento para um colaborador',
+    description:
+      'Este endpoint permite registrar alocação de um item equipamento para um colaborador no sistema',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Alocado com sucesso',
+    schema: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'object',
+          properties: {
+            id: { type: 'number' },
+            serialNumber: { type: 'string' },
+            imei: { type: 'string' },
+            equipamentId: { type: 'string' },
+            employeeId: { type: 'string' },
+            status: { type: 'string' },
+            active: { type: 'boolean' },
+            createdAt: { type: 'string', format: 'date-time' },
+            updatedAt: { type: 'string', format: 'date-time', nullable: true },
+            deletedAt: { type: 'string', format: 'date-time', nullable: true },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 409,
+    description: 'Item de equipamento já alocado',
+    schema: {
+      type: 'object',
+      properties: {
+        message: {
+          example: 'Equipament Item with ID "X" is already allocated',
+        },
+        error: { example: 'Conflict' },
+        statusCode: { example: 409 },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 409,
+    description: 'Item de equipamento em manutenção',
+    schema: {
+      type: 'object',
+      properties: {
+        message: {
+          example: 'Equipament Item with ID "X" is in maintenance',
+        },
+        error: { example: 'Conflict' },
+        statusCode: { example: 409 },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Id do colaborador não encontrado ou inativo',
+    schema: {
+      type: 'object',
+      properties: {
+        message: {
+          example: 'Employee with ID "X" not found',
+        },
+        error: { example: 'Not Found' },
+        statusCode: { example: 404 },
+      },
+    },
+  })
+  @Patch('allocate/:id/employee/:employeeId')
+  public async allocate(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('employeeId', ParseIntPipe) employeeId: number,
+  ): Promise<ApiResponseType<EquipamentItem>> {
+    const equipament = await this.equipamentItemService.allocate(
+      id,
+      employeeId,
+    );
+
+    return { data: equipament };
+  }
 }

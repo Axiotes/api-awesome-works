@@ -12,12 +12,14 @@ import { EquipamentItemStatusEnum } from '@ds-common/enum/equipament-item-status
 import { EquipamentService } from '@ds-modules/equipament/equipament.service';
 import { FindEquipamentItemDto } from '@ds-dtos/find-equipament-item.dto';
 import { UpdateEquipamentItemDto } from '@ds-dtos/update-equipament-item.dto';
+import { EmployeeService } from '@ds-modules/employee/employee.service';
 
 @Injectable()
 export class EquipamentItemService {
   constructor(
     private readonly equipamentItemRepository: EquipamentItemRepository,
     private readonly equipamentService: EquipamentService,
+    private readonly employeeService: EmployeeService,
   ) {}
 
   public async create(equipament: EquipamentItemDto): Promise<EquipamentItem> {
@@ -230,7 +232,12 @@ export class EquipamentItemService {
 
     const deletedAt = new Date();
 
-    const equipamentUpdates = { ...equipament, active: false, deletedAt };
+    const equipamentUpdates = {
+      ...equipament,
+      active: false,
+      status: EquipamentItemStatusEnum.DISCARDED,
+      deletedAt,
+    };
 
     return await this.equipamentItemRepository.update(id, equipamentUpdates);
   }
@@ -252,8 +259,47 @@ export class EquipamentItemService {
 
     const deletedAt = null;
 
-    const equipamentUpdates = { ...equipament, active: true, deletedAt };
+    const equipamentUpdates = {
+      ...equipament,
+      active: true,
+      status: EquipamentItemStatusEnum.AVAILABLE,
+      employeeId: null,
+      deletedAt,
+    };
 
     return await this.equipamentItemRepository.update(id, equipamentUpdates);
+  }
+
+  public async allocate(
+    id: number,
+    employeeId: number,
+  ): Promise<EquipamentItem> {
+    const equipamentItem = await this.findById(id);
+    await this.employeeService.findById(employeeId, { id: true });
+
+    if (equipamentItem.status === EquipamentItemStatusEnum.IN_USE) {
+      throw new ConflictException(
+        `Equipament Item with ID "${id}" is already allocated`,
+      );
+    }
+
+    if (equipamentItem.status === EquipamentItemStatusEnum.MAINTENANCE) {
+      throw new ConflictException(
+        `Equipament Item with ID "${id}" is in maintenance`,
+      );
+    }
+
+    const updatedAt = new Date();
+    const equipamentItemUpdated = {
+      ...equipamentItem,
+      employeeId,
+      status: EquipamentItemStatusEnum.IN_USE,
+      updatedAt,
+    };
+
+    return await this.equipamentItemRepository.update(
+      id,
+      equipamentItemUpdated,
+    );
   }
 }

@@ -6,9 +6,10 @@ import { EquipamentItemRepository } from './equipament-item.repository';
 
 import { ServicesModule } from '@ds-common/services/services.module';
 import { EquipamentModule } from '@ds-modules/equipament/equipament.module';
+import { EmployeeModule } from '@ds-modules/employee/employee.module';
 
 @Module({
-  imports: [ServicesModule, EquipamentModule],
+  imports: [ServicesModule, EquipamentModule, EmployeeModule],
   providers: [EquipamentItemService, EquipamentItemRepository],
   controllers: [EquipamentItemController],
 })

@@ -10,5 +10,6 @@ import { ServicesModule } from '@ds-common/services/services.module';
   imports: [ServicesModule],
   providers: [EmployeeService, EmployeeRepository],
   controllers: [EmployeeController],
+  exports: [EmployeeService],
 })
 export class EmployeeModule {}
