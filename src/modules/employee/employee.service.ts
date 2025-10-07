@@ -1,5 +1,9 @@
-import { ConflictException, Injectable } from '@nestjs/common';
-import { Employee } from '@prisma/client';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { Employee, Prisma } from '@prisma/client';
 
 import { EmployeeRepository } from './employee.repository';
 
@@ -34,5 +38,22 @@ export class EmployeeService {
     }
 
     return await this.employeeRepository.create(employee);
+  }
+
+  public async findById(
+    id: number,
+    select?: Prisma.EmployeeSelect,
+  ): Promise<Employee> {
+    if (select && select.department) {
+      select.department = { select: { name: true, abbreviation: true } };
+    }
+
+    const employee = await this.employeeRepository.findById(id, select);
+
+    if (!employee) {
+      throw new NotFoundException(`Employee with ID "${id}" not found`);
+    }
+
+    return employee;
   }
 }
