@@ -11,7 +11,13 @@ import { CombinedLogsInterceptor } from '@ds-common/interceptors/combined-logs/c
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
 
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: false,
+    }),
+  );
 
   const logger = app.get(LoggerService);
   app.useGlobalInterceptors(new ErrorLogsInterceptor(logger));

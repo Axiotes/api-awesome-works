@@ -23,4 +23,15 @@ export class EquipamentRepository {
       select,
     });
   }
+
+  public async findById<T extends Prisma.EquipamentSelect>(
+    id: number,
+    select?: T,
+    active = true,
+  ): Promise<Prisma.EquipamentGetPayload<{ select: T }> | null> {
+    return this.prisma.equipament.findUnique({
+      where: { id, active },
+      select,
+    });
+  }
 }
