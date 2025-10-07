@@ -1,8 +1,10 @@
 import { Employee, Prisma } from '@prisma/client';
+import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '@ds-common/services/prisma/prisma.service';
 import { EmployeeDto } from '@ds-dtos/employee.dto';
 
+@Injectable()
 export class EmployeeRepository {
   constructor(private readonly prisma: PrismaService) {}
 
