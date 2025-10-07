@@ -22,4 +22,18 @@ export class DepartmentRepository {
       select,
     });
   }
+
+  public async findAll<T extends Prisma.DepartmentSelect>(
+    skip: number,
+    limit: number,
+    where: Prisma.DepartmentWhereInput = {},
+    select?: T,
+  ): Promise<Prisma.DepartmentGetPayload<{ select: T }>[] | null> {
+    return this.prisma.department.findMany({
+      where,
+      skip,
+      take: limit,
+      select,
+    });
+  }
 }

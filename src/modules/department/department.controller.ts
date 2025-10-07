@@ -15,6 +15,7 @@ import { DepartmentDto } from '@ds-dtos/department.dto';
 import { ApiResponseType } from '@ds-common/types/api-response.type';
 import { SelectFieldsDto } from '@ds-dtos/select-fields.dto';
 import { buildSelectObject } from '@ds-common/helpers/build-select-object.helper';
+import { FindAllDepartmentDto } from '@ds-dtos/find-all-departments.dto';
 
 @Controller('department')
 export class DepartmentController {
@@ -50,5 +51,33 @@ export class DepartmentController {
     const department = await this.departmentService.findById(id, select);
 
     return { data: department };
+  }
+
+  @Get()
+  public async findAll(
+    @Query() query: FindAllDepartmentDto,
+  ): Promise<ApiResponseType<Department[]>> {
+    const fields = query.fields ?? [];
+    const allowed = [
+      'id',
+      'name',
+      'prefix',
+      'category',
+      'brand',
+      'active',
+      'created_at',
+      'updated_at',
+      'deleted_at',
+    ];
+
+    const select = buildSelectObject(fields, allowed);
+
+    const department = await this.departmentService.findAll(query, select);
+
+    return {
+      data: department,
+      pagination: { skip: query.skip, limit: query.limit },
+      total: department.length,
+    };
   }
 }
