@@ -1,98 +1,83 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Awesome Works
+## Controle de Equipamentos (Desafio Técnico)
+Projeto criado para resolver o cenário do desafio técnico. Este projeto consiste em uma API RESTful para controle e rastreamento de equipamentos de TI. O objetivo principal é oferecer uma solução backend capaz de gerenciar de forma centralizada os ativos tecnológicos da organização, permitindo o cadastro, controle, rastreamento e associação dos dispositivos (como notebooks, desktops e celulares) aos colaboradores e departamentos.
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## 1 — Visão geral
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+API RESTful (NestJS + TypeScript + Prisma + PostgreSQL) para controlar modelos de equipamentos e itens (dispositivos físicos). Permite:
 
-## Description
+* Cadastrar/editar/excluir modelos de equipamentos (ex.: Notebook, Desktop);
+* Cadastrar/editar/excluir itens com número de série e IMEI;
+* Registrar vínculo do item a um colaborador (employee) e ao departamento;
+* Controlar status do item: `AVAILABLE`, `IN_USE`, `MAINTENANCE`, `DISCARDED`;
+* Histórico mínimo de timestamps (created_at, updated_at, deleted_at);
+* Documentação via Swagger e coleção Postman
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## 2 — Tecnologias usadas
 
-## Project setup
+* Node.js + TypeScript
+* NestJS
+* Prisma ORM (PostgreSQL)
+* class-validator / class-transformer (validações DTOs)
+* Swagger (documentação)
 
-```bash
-$ npm install
-```
+## 3 — Modelagem do banco de dados
+<img width="796" height="842" alt="Awesome Works" src="https://github.com/user-attachments/assets/cc0f8669-198d-4d35-b024-4fea6165575d" />
 
-## Compile and run the project
+## 4 — Entidades e regras de negócio
 
-```bash
-# development
-$ npm run start
+* **equipaments_models**: modelos de equipamentos (nome único + prefixo) — ex.: `NB`, `DK`.
+* **equipaments_items**: cada dispositivo físico contém `serial_number`, `imei`, referência ao modelo e (opcional) ao `employee` responsável. Status controlado por enum (`AVAILABLE`, `IN_USE`, `MAINTENANCE`, `DISCARDED`).
+* **departments**: setores da empresa.
+* **employees**: colaboradores, com `department_id`.
+* Regras importantes:
+  * Um `equipament_item` deve pertencer a um `equipament_model` existente.
+  * `employee_id` pode ser `null` (item sem responsável).
+  * `equipaments_models.name` é único (evita duplicação de modelos).
+  * Deleção lógica com compo `active`
+  
+## 6 — Instalação e execução local
 
-# watch mode
-$ npm run start:dev
+Pré-requisitos:
 
-# production mode
-$ npm run start:prod
-```
+* Node.js (>= 18)
+* PostgreSQL rodando localmente (ou container)
+* `DATABASE_URL` configurada em `.env` (ex.: `postgresql://user:pass@localhost:5432/dbname?schema=public`)
 
-## Run tests
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+Passos (exemplo com npm):
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+# clonar
+git clone git@github.com:Axiotes/api-awesome-works.git
+cd api-awesome-works
+
+# instalar dependências
+npm install
+
+# configurar .env
+# DATABASE_URL="postgresql://postgres:password@localhost:5432/awesome_works_db"
+
+# gerar cliente Prisma
+npx prisma generate
+
+# rodar migrations (ver seção 7 para instruções de seed)
+npx prisma migrate dev --name init
+
+# rodar em desenvolvimento
+npm run start:dev
+
+# Rota base: http://localhost:3000/api/v1
+# Swagger: http://localhost:3000/api/docs
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## 7 — Documentação & Coleção de Requisições
+* Swagger disponível em `/api/docs` (ex.: `http://localhost:3000/api/docs`)
+* Coleção do Postman
 
-## Resources
+## 8 — Melhorias futuras
+* Registrar histórico de movimentações (quem pegou/entregou o equipamento e quando)
+* Endpoint para anexar histórico de reparos/manutenção
+* Implementar testes unitários em caso de sucesso e falha
 
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## Autor
+- Arthur Axiotes de Souza
