@@ -210,6 +210,58 @@ export class EmployeeController {
     };
   }
 
+  @ApiOperation({
+    summary: 'Atualizar um colaborador',
+    description: 'Este endpoint permite atualizar um colaborador no sistema.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Colaborador atualizado com sucesso',
+    schema: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'object',
+          properties: {
+            id: { type: 'number' },
+            name: { type: 'string' },
+            cpf: { type: 'string' },
+            email: { type: 'string' },
+            jobTitle: { type: 'string' },
+            departmentId: { type: 'string' },
+            active: { type: 'boolean' },
+            createdAt: { type: 'string', format: 'date-time' },
+            updatedAt: { type: 'string', format: 'date-time', nullable: true },
+            deletedAt: { type: 'string', format: 'date-time', nullable: true },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 409,
+    description: 'Colaborador com o mesmo cpf já existe',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { example: 'Employee with the cpf "XXXXX" already exists' },
+        error: { example: 'Conflict' },
+        statusCode: { example: 409 },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 409,
+    description: 'Email com o mesmo email já existe',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { example: 'Employee with the cpf "XXXXX" already exists' },
+        error: { example: 'Conflict' },
+        statusCode: { example: 409 },
+      },
+    },
+  })
   @Patch(':id')
   public async update(
     @Param('id', ParseIntPipe) id: number,
